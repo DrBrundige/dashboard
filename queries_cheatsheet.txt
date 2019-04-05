@@ -1,0 +1,10 @@
+SELECT id, username, permission FROM users
+ORDER BY id DESC
+
+INSERT INTO mules (success, organizations_id, started_at, finished_at) VALUES (1, 2, now(), now()+30');
+
+UPDATE users SET username = 'Brundige'
+WHERE id = '1'
+
+DELETE FROM mules WHERE id='1'
+

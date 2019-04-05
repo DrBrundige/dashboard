@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="top row">
+		<div class="col-sm-3">
+			<form action="/dashboard">
+				<input type="submit" value="Dashboard" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/dashboard/custom">
+				<input type="submit" value="Custom Report" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form>
+				<input type="submit" value="Admin" class="btn btn-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/logout" method="POST">
+				<input type="submit" value="Log Out" class="btn btn-outline-light">
+			</form>
+		</div>
+	</div>
+	<div class="row mb-3">
+		
+		<div class="col-md">
+			<h2>Settings for User {{ user.un }}</h2>
+			
+			<hr class="my-4">
+			{% with messages = get_flashed_messages(category_filter=["settings"]) %}
+			{% if messages %}
+			{% for message in messages %}
+			<h6>{{message}}</h6>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			
+			<form action="/dashboard/settings/update" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-md-5">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="igs11">Latest Mules No.</label>
+							</div>
+							<input name="mule_no" type="text" class="form-control" value = "{{ user.ml }}" id="igs11">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="igs12">Refresh Rate</label>
+							</div>
+							<input name="refresh" type="text" class="form-control" value = "{{ user.rr }}" id="igs12">
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="igs13">Include Emojis</label>
+							</div>
+							<select class="custom-select" id="igs13">
+								<option value="yes">Yes</option>
+								<option value="yes_but_in_bold">Yes</option>
+							</select>
+						</div>
+						<input type="submit" value="Update" class="btn btn-success mb-3">
+					</div>
+				</div>
+			</form>
+			{% if user.p == 9 %}
+			<h2>Global Settings:</h2>
+			<p>There's nothing here yet...</p>
+			{% endif %}
+		</div>
+	</div>
+
+</div>
+</body>
+</html>

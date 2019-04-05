@@ -39,7 +39,8 @@ def login():
 			session['is_logged'] = True
 			session['permission'] = username[0]['permission']
 			session['id'] = username[0]['id']
-			session['max_latest'] = username[0]['max_latest']
+			session['max_latest'] = int(username[0]['max_latest'])
+			session['refresh'] = int(username[0]['refresh'])
 			return redirect('/dashboard')
 		else:
 			print("Password incorrect!")
@@ -116,7 +117,8 @@ def custom(query=None):
 			tdy = tdy - timedelta(days=2)
 			end = tdy.strftime("%Y-%m-%d")
 
-		return render_template('dashboard_custom.html', header=header, start=start, end=end, all_mules=all_mules, you=session['id'])
+		return render_template('dashboard_custom.html', header=header, start=start, end=end, all_mules=all_mules,
+		                       you=session['id'])
 
 	return redirect('/')
 
@@ -186,7 +188,8 @@ def admin():
 		query = "SELECT id, username, permission FROM dashboard.users ORDER BY username"
 		all_users = mysql.query_db(query)
 
-		return render_template('dashboard_admin.html', permission=session['permission'], all_users=all_users, you=session['id'])
+		return render_template('dashboard_admin.html', permission=session['permission'], all_users=all_users,
+		                       you=session['id'])
 
 
 @app.route('/create', methods=['POST'])
@@ -247,6 +250,81 @@ def register():
 		mysql.query_db(query, data)
 
 	return redirect('/dashboard/admin')
+
+
+@app.route('/dashboard/settings')
+def settings():
+	if 'permission' not in session:
+		session['permission'] = -1
+	if session['permission'] < 1:
+		flash("You must log in to view this page!", 'login')
+		print("You must log in to view this page!")
+	else:
+
+		mysql = connectToMySQL('dashboard')
+
+		query = "SELECT * FROM users WHERE id=%(i)s"
+		data = {
+			"i": session['id']
+		}
+		user_q = mysql.query_db(query, data)
+		# print(user_q)
+
+		user = {
+			"un": user_q[0]['username'],
+			"p": user_q[0]['permission'],
+			"ml": user_q[0]['max_latest'],
+			"rr": user_q[0]['refresh_rate'],
+		}
+		# print(user)
+
+		return render_template('dashboard_settings.html', user=user)
+
+	return redirect('/')
+
+
+@app.route('/dashboard/settings/update', methods=['POST'])
+def settings_update():
+
+	print("\nValidating!")
+	print(request.form)
+
+	is_valid = True
+
+	try:
+		int(request.form['mule_no'])
+	except:
+		print("Mule number must be a number!")
+		flash("Mule number must be a number!", 'settings')
+		is_valid = False
+	try:
+		int(request.form['refresh'])
+	except:
+		print("Refresh rate must be a number!")
+		flash("Refresh rate must be a number!", 'settings')
+		is_valid = False
+
+	if is_valid:
+		query = "UPDATE users SET max_latest = %(ml)s, refresh_rate = %(rr)s WHERE id = %(id)s"
+		data = {
+			"ml": request.form['mule_no'],
+			"rr": request.form['refresh'],
+			"id": session['id']
+		}
+
+		mysql = connectToMySQL('dashboard')
+		success = mysql.query_db(query, data)
+
+		if success == False:
+			print("An unexpected error has occurred! Settings not updated!")
+			flash("An unexpected error has occurred! Settings not updated!", 'settings')
+		else:
+			print("User settings successfully updated!")
+			flash("User settings successfully updated!", 'settings')
+			session['max_latest'] = int(request.form['mule_no'])
+			session['refresh'] = int(request.form['refresh'])
+
+	return redirect('/dashboard/settings')
 
 
 def get_rows_between(start, end, limit=8192):
