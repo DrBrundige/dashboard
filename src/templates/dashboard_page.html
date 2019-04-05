@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="row top">
+		<div class="col-sm-3">
+			<!--<form >-->
+			<input type="submit" value="Dashboard" class="btn btn-light">
+			<!--</form>-->
+		</div>
+		<div class="col-sm-3">
+			<form action="/dashboard/custom">
+				<input type="submit" value="Custom Report" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/dashboard/admin">
+				<input type="submit" value="Admin" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/logout" method="POST">
+				<input type="submit" value="Log Out" class="btn btn-outline-light">
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md text-center">
+			{% if f == 0 %}
+			<h2>❤️ 🧡 💛 ALL MULES RUNNING 💚 💙 💜</h2>
+			{% else %}
+			<h2 class="failure">💀 💀 💀 {{f}} MULES FAILED IN PAST 24 HOURS! 💀 💀 💀</h2>
+			{% endif %}
+			<hr class="my-4">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md">
+			<h2>Latest Mules:</h2>
+			<ul>
+				{% for mule in all_mules %}
+				<li>{{mule.finished_at}} – {{mule.name}} {% if mule.success == 1 %}success{% else %}FAILURE {%endif%}
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="col-md">
+			<h2>Latest Reports:</h2>
+			<ul>
+				<li>Last Eight Hours:</li>
+				<ul>
+					{% for line in r1 %}
+					{% if r1[line][0]>0 %}
+					<li>{{line}} FAILURES: {{r1[line][0]}}</li>
+					{% endif %}
+					{% if r1[line][1]>0 %}
+					<li>{{line}} successes: {{r1[line][1]}}</li>
+					{% endif %}
+					{% endfor %}
+				</ul>
+				<li>Last Twenty-Four Hours:</li>
+				<ul>
+					{% for line in r2 %}
+					{% if r2[line][0]>0 %}
+					<li>{{line}} FAILURES: {{r2[line][0]}}</li>
+					{% endif %}
+					{% if r2[line][1]>0 %}
+					<li>{{line}} successes: {{r2[line][1]}}</li>
+					{% endif %}
+					{% endfor %}
+				</ul>
+			</ul>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

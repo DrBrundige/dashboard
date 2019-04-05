@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="row top">
+		<div class="col-sm-3">
+			<form action="/dashboard">
+				<input type="submit" value="Dashboard" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<!--<form action="/logout">-->
+			<input type="submit" value="Custom Report" class="btn btn-light">
+			<!--</form>-->
+		</div>
+		<div class="col-sm-3">
+			<form action="/dashboard/admin">
+				<input type="submit" value="Admin" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/logout" method="POST">
+				<input type="submit" value="Log Out" class="btn btn-outline-light">
+			</form>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md">
+			<h2>Custom Report</h2>
+			<!--Form-->
+			<form action="/dashboard/custom/report" method="POST">
+				<div class="row">
+					<div class="col-sm">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inGrpSt02">Format</label>
+							</div>
+							<select name="format" class="custom-select" id="inGrpSt02">
+								<option value="lst_txt">List - Text</option>
+								<option value="rpt_txt">Report - Text</option>
+								<option value="lst_tbl">List - Table</option>
+								<option value="rpt_tbl">Report - Table</option>
+							</select>
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inGrpSt03">Start Time</label>
+							</div>
+							<input name="start" type="text" value={{start}} id="inGrpSt03" class="form-control">
+							<!--<input name="start_time" type="time" class="form-control">-->
+						</div>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inGrpSt04">End Time</label>
+							</div>
+							<input name="end" type="text" value={{end}} id="inGrpSt04" class="form-control">
+							<!--<input name="end_time" type="time" class="form-control">-->
+						</div>
+						
+						<input type="submit" value="Run Report!" class="btn btn-success mb-3">
+					</div>
+				</div>
+			</form>
+			
+			<!--List Text-->
+			{% if header == "lst_txt" %}
+			<h2>Mules Between {{start}} and {{end}}:</h2>
+			
+			{% if all_mules %}
+			<ul>
+				{% for mule in all_mules %}
+				<li>{{mule.finished_at}} – {{mule.name}} {% if mule.success == 1 %}success{% else %}FAILURE {%endif%}
+				</li>
+				{% endfor %}
+			</ul>
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			
+			<!--Report Text-->
+			
+			{% elif header == "rpt_txt" %}
+			<h2>Summary of mules between {{start}} and {{end}}:</h2>
+			{% if all_mules %}
+			<ul>
+				{% for line in all_mules %}
+				{% if all_mules[line][0]>0 %}
+				<li>{{line}} FAILURES: {{all_mules[line][0]}}</li>
+				{% endif %}
+				{% if all_mules[line][1]>0 %}
+				<li>{{line}} successes: {{all_mules[line][1]}}</li>
+				{% endif %}
+				{% endfor %}
+			</ul>
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			
+			<!--List as Table-->
+			
+			{% elif header == "lst_tbl" %}
+			<h2>Mules Between {{start}} and {{end}}:</h2>
+			{% if all_mules %}
+			<table class="table">
+				<thead class="thead-light">
+				<tr>
+					<th scope="col">Time Completed</th>
+					<th scope="col">Organization</th>
+					<th scope="col">Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for mule in all_mules%}
+				<tr>
+					<th scope="row">{{mule["finished_at"]}}</th>
+					<td>{{mule["name"]}}</td>
+					<td>{% if mule["success"] == 1 %}Success 💙{%else%}FAILURE! 💀{%endif%}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			
+			<!--Report as Table-->
+			
+			{% elif header == "rpt_tbl" %}
+			<h2>Mules Between {{start}} and {{end}}:</h2>
+			{% if all_mules %}
+			<table class="table">
+				<thead class="thead-light">
+				<tr>
+					<th scope="col">Organization</th>
+					<th scope="col">Successes</th>
+					<th scope="col">Failures</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for line in all_mules%}
+				<tr>
+					<th scope="row">{{line}}</th>
+					<td>{{all_mules[line][1]}}</td>
+					<td>{{all_mules[line][0]}}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			
+			{% elif header == "lst_tbl" %}
+			<h2>Mules Between {{start}} and {{end}}:</h2>
+			{% if all_mules %}
+			<table class="table">
+				<thead class="thead-light">
+				<tr>
+					<th scope="col">Time Completed</th>
+					<th scope="col">Organization</th>
+					<th scope="col">Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for mule in all_mules%}
+				<tr>
+					<th scope="row">{{mule["finished_at"]}}</th>
+					<td>{{mule["name"]}}</td>
+					<td>{% if mule["success"] == 1 %}Success 💙{%else%}FAILURE! 💀{%endif%}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			{% elif header == "lst_tbl" %}
+			<h2>Mules Between {{start}} and {{end}}:</h2>
+			{% if all_mules %}
+			<table class="table">
+				<thead class="thead-light">
+				<tr>
+					<th scope="col">Time Completed</th>
+					<th scope="col">Organization</th>
+					<th scope="col">Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for mule in all_mules%}
+				<tr>
+					<th scope="row">{{mule["finished_at"]}}</th>
+					<td>{{mule["name"]}}</td>
+					<td>{% if mule["success"] == 1 %}Success 💙{%else%}FAILURE! 💀{%endif%}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+			
+			{% else %}
+			<h4>No mules during this period!</h4>
+			{% endif %}
+			
+			{% endif %}
+		
+		
+		</div>
+		{% if you <= 8%}
+		<div class="col-md">
+			<h2>Custom Query</h2>
+			<form action="/dashboard/custom/query" method="POST">
+				<div class="row">
+					<div class="col-sm">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inGrpSt05">Format</label>
+							</div>
+							<select name="format" class="custom-select" id="inGrpSt05">
+								<option value="lst_txt">List - Text</option>
+								<option value="rpt_txt">Report - Text</option>
+								<option value="lst_tbl">List - Table</option>
+								<option value="rpt_tbl">Report - Table</option>
+							</select>
+						</div>
+						<p>SELECT mules.id, success, finished_at, name FROM mules JOIN organizations ON organizations_id = organizations.id</p>
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text">WHERE</label>
+							</div>
+							<textarea name="start" class="form-control" rows="3"></textarea>
+						</div>
+						
+						<input type="submit" value="Run Query!" class="btn btn-success mb-3">
+					</div>
+				</div>
+			</form>
+		</div>
+		{%endif%}
+	</div>
+
+</div>
+</body>
+</html>

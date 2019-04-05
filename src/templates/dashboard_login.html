@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="top row">
+		<h1>Dashboard</h1>
+	</div>
+	<div class="row mb-3">
+		<div class="col-md">
+			<h2>Login</h2>
+			{% with messages = get_flashed_messages(category_filter=["login"]) %}
+			{% if messages %}
+			{% for message in messages %}
+			<h6 class="failure">{{message}}</h6>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			<form action="/login" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control mb-3" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+						<input name="password" type="password" class="form-control mb-3" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
+						<input type="submit" value="Submit" class="btn btn-success">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</div>
+</body>
+</html>

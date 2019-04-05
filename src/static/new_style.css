@@ -1,0 +1,47 @@
+body{
+	background-color: #ebebeb;
+}
+*{
+    font-family: roboto;
+}
+
+.container{
+	margin: 0 auto;
+	margin-bottom: 25px;
+	align-content: center;
+	vertical-align: bottom;
+	width: 960px;
+	min-height: 480px;
+	background-color: white;
+	border-radius: 0px 0px 30px 30px;
+	border: #59a923 4px solid;
+}
+
+p{
+	margin-bottom: 8px;
+}
+img{
+    max-width:500px;
+}
+a{
+text-align: right;
+}
+.top{
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	background-color: #59a923;
+	color: white;
+	margin-bottom: 15px;
+}
+.longboi{
+    width: 500px;
+}
+
+.failure{
+	color: #c42f1a;
+}
+
+.btn-success{
+    background-color: #59a923;
+}

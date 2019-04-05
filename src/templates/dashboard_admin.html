@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Dashboard</title>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<!-- JS Styles -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	        crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+	        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	        crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+	        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	        crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='new_style.css') }}">
+</head>
+
+<body>
+<div class="container">
+	<div class="top row">
+		<div class="col-sm-3">
+			<form action="/dashboard">
+				<input type="submit" value="Dashboard" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/dashboard/custom">
+				<input type="submit" value="Custom Report" class="btn btn-outline-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form>
+				<input type="submit" value="Admin" class="btn btn-light">
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<form action="/logout" method="POST">
+				<input type="submit" value="Log Out" class="btn btn-outline-light">
+			</form>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<h2>All Users</h2>
+		<table class="table">
+			<thead class="thead-light">
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">Username</th>
+				<th scope="col">Permission</th>
+				{% if permission == 9 %}
+				<th scope="col">Actions</th>
+				{% endif %}
+			</tr>
+			</thead>
+			<tbody>
+			{% for user in all_users%}
+			<tr>
+				<th scope="row">{{user["id"]}}</th>
+				<td>{{user["username"]}}</td>
+				<td>{{user["permission"]}}</td>
+				{% if permission == 9 %}
+				<td>Edit</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		{% if permission == 9 %}
+		<div class="col-md">
+			
+			<hr class="my-4">
+			<h2>Create New User</h2>
+			{% with messages = get_flashed_messages(category_filter=["register"]) %}
+			{% if messages %}
+			{% for message in messages %}
+			<h6 class="failure">{{message}}</h6>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			
+			<form action="/create" method="POST">
+				<div class="row input-group mb-3">
+					<div class="col-sm-4">
+						<input name="name" type="text" class="form-control mb-3" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<label class="input-group-text" for="inputGroupSelect01">Admin Permissions</label>
+							</div>
+							<select name="permission" class="custom-select" id="inputGroupSelect01">
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="8">8</option>
+								<option value="9">9</option>
+							</select>
+						</div>
+						<!--</div>-->
+						<!--<div class="col-sm-4">-->
+						<input name="pword1" type="password" class="form-control mb-3" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
+						<input name="pword2" type="password" class="form-control mb-3" placeholder="Confirm Password" aria-label="Username" aria-describedby="basic-addon1">
+						<input type="submit" value="Create" class="btn btn-success">
+					</div>
+				</div>
+			</form>
+		</div>
+		{% endif %}
+	</div>
+
+</div>
+</body>
+</html>
