@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, flash, session
-from src.mysqlconnection import connectToMySQL
 from flask_bcrypt import Bcrypt
+from mysqlconnection import connectToMySQL
 
 app = Flask(__name__)
 app.secret_key = 'bigm00d'
@@ -40,7 +40,7 @@ def login():
 			session['permission'] = username[0]['permission']
 			session['id'] = username[0]['id']
 			session['max_latest'] = int(username[0]['max_latest'])
-			session['refresh'] = int(username[0]['refresh'])
+			session['refresh'] = int(username[0]['refresh_rate'])
 			return redirect('/dashboard')
 		else:
 			print("Password incorrect!")
@@ -381,9 +381,9 @@ def count_failures():
 
 	return failures
 
-
 def create():
 	e = datetime.now()
+	e = e.replace(day=1);
 	e = e.replace(hour=8)
 	e = e.replace(minute=30)
 	e = e.replace(second=0)
